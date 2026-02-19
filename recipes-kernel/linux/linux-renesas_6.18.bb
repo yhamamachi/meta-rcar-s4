@@ -12,15 +12,15 @@ CVE_PRODUCT ?= ""
 
 # LINUX_VERSION/REPO/BRANCH/SRCREV are defined in inc file
 require recipes-kernel/linux/kernel_6.18.inc
-COMPATIBLE_MACHINE = "(rcar-gen4)"
+COMPATIBLE_MACHINE = "(s4sk|spider)"
 
 # nooelint: oelint.vars.mispell.unknown - Yocto variable
 KCONFIG_MODE = "alldefconfig"
 # nooelint: oelint.vars.mispell.unknown
-KBUILD_DEFCONFIG:rcar-gen4 = "renesas_defconfig"
+KBUILD_DEFCONFIG:${MACHINE} = "renesas_defconfig"
 PV = "${LINUX_VERSION}+git${SRCPV}"
 SRC_URI = "${REPO};branch=${BRANCH};protocol=https"
-SRC_URI:append:rcar-gen4 = " \
+SRC_URI:append = " \
     file://rcar-s4.cfg \
     file://${MACHINE}.cfg \
 "
