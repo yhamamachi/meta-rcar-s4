@@ -8,15 +8,15 @@ COMPATIBLE_MACHINE = "(s4sk|spider)"
 DEPENDS += "lzop-native srecord-native"
 DEPENDS += "bc-native dtc-native python3-pyelftools-native gnutls-native"
 
-UBOOT_URL = "git://source.denx.de/u-boot/u-boot.git"
-BRANCH = "master"
-SRCREV = "127a42c7257a6ffbbd1575ed1cbaa8f5408a44b3"
+UBOOT_URL = "git://github.com/u-boot/u-boot"
+BRANCH = "main"
+SRCREV = "5508406582f6f7120dce0c4b3059819a41788db2"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 
 SRC_URI = "${UBOOT_URL};branch=${BRANCH};protocol=https"
 
-PV = "v2026.01+git${SRCPV}"
+PV = "v2026.10+git${SRCPV}"
 
 UBOOT_SREC_SUFFIX = "srec"
 UBOOT_SREC ?= "u-boot-elf.${UBOOT_SREC_SUFFIX}"
