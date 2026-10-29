@@ -13,7 +13,7 @@ IMAGE_FSTYPES += " tar.bz2 ext4 wic.gz wic.bmap"
 EXTRA_IMAGEDEPENDS += " arm-trusted-firmware"
 
 # u-boot
-PREFERRED_VERSION_u-boot = "v2026.01+git%"
+PREFERRED_VERSION_u-boot = "v2026.10+git%"
 EXTRA_IMAGEDEPENDS += " u-boot"
 
 WKS_FILE ?= "rcar-singlepart-noloader.wks"
