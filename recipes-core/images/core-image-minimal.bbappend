@@ -39,6 +39,12 @@ do_s4sk_fix_ufs_mbr() {
         echo "s4sk_fix_ufs_mbr: fix_ufs_mbr.py not found in FILESPATH" >&2
         exit 1
     fi
+    # SD cards have 512-byte logical blocks, so the wic-native MBR (512-byte
+    # units) is already correct for SD boot. Keep an unmodified copy of the
+    # deployed gz before rewriting the UFS variant in place; SD flashing
+    # consumes ${IMAGE_LINK_NAME}-sd.wic.gz.
+    cp -f "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.wic.gz" \
+          "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}-sd.wic.gz"
     # Patch the deployed artifact (what the flash script consumes); the
     # IMGDEPLOYDIR staging copy is intermediate and overwritten per build.
     python3 "$script" "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.wic.gz"
