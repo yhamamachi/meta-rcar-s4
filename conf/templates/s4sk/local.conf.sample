@@ -297,8 +297,11 @@ export SOURCE_DATE_EPOCH = "${@time.strftime('%s', time.localtime())}"
 REPRODUCIBLE_TIMESTAMP_ROOTFS = "${@time.strftime('%s', time.localtime())}"
 
 # Upstream Kernel Builds
-PREFERRED_VERSION_linux-renesas = "6.12%"
-LINUXLIBCVERSION = "6.12%"
+# 6.18.54 (renesas-lts/v6.18.54) verified booting on S4SK hardware (SD rootfs
+# via TFTP, UFS device visible as /dev/sda); 6.12 remains buildable via
+# linux-renesas_6.12.bb by overriding PREFERRED_VERSION_linux-renesas.
+PREFERRED_VERSION_linux-renesas = "6.18%"
+LINUXLIBCVERSION = "6.18%"
 # linux-libc-headers is depended on Yocto version
 PREFERRED_VERSION_linux-libc-headers = "6.6"
 PREFERRED_VERSION_nativesdk-linux-libc-headers = "6.6"
