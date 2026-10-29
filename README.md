@@ -22,15 +22,21 @@ to `/boot/`, and `s4sk-boot-ufs` installs a mkimage boot script
 
 ## Booting on S4SK (verified on hardware, U-Boot 2026.10)
 
-### From SD card (bootcmd `ext4load mmc ... u-boot` chain)
-Deploy `Image` and `r8a779f4-s4sk.dtb` via TFTP and boot manually:
+### From SD card
+The SD variant keeps the wic-native MBR (512-byte units — SD logical
+blocks are 512, so no UFS unit rewrite is applied):
+`core-image-minimal-s4sk.rootfs-sd.wic.gz`. Flash it via
+`s4sk_remote/s4sk_flash_sd.sh core-image-minimal-s4sk.rootfs-sd.wic.gz`
+(TFTP + `gzwrite mmc 0`; destructive — overwrites the SD card). Boot:
 
 ```
-tftpboot 0x48000000 r8a779f4-s4sk-618.dtb
-tftpboot 0x48080000 Image-6.18
-setenv bootargs rw root=/dev/mmcblk0p1 rootwait ignore_loglevel cma=560M
-booti 0x48080000 - 0x48000000
+ext4load mmc 0:1 0x48000000 /boot/boot-sd.uImage
+source 0x48000000
 ```
+
+The boot script sets `root=/dev/mmcblk0p1` and loads `/boot/Image` + DTB.
+(The U-Boot env `bootcmd` still holds the legacy `ext4load mmc ... u-boot`
+chain; manual boot as above, or adjust env via `setenv`/`saveenv`.)
 
 ### From UFS
 U-Boot sees the on-board UFS (WDC 128GB) as SCSI device 0 (7 factory
