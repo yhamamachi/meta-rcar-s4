@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [Renesas S4SK board specific]
+
 diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
 index 87578e8..d2227c7 100644
 --- a/drivers/ufs/core/ufshcd.c

@@ -1,6 +1,8 @@
 From caf197b05b154ce1948d6fe53e7bdec96e4a7129 Mon Sep 17 00:00:00 2001
 From: Tsukasa Kawaguchi <tsukasa.kawaguchi.aw@hitachi.com>
 Date: Mon, 12 Jul 2021 17:11:07 +0900
+
+Upstream-Status: Inappropriate [downstream customization for S4SK]
 Subject: [PATCH] tee-supplicant: Delete the sleep time when writing data
 
 Deleted sleep processing to shorten processing time.
