@@ -282,8 +282,9 @@ VIRTUAL-RUNTIME_init_manager = "systemd"
 # add the static lib to SDK toolchain
 #SDKIMAGE_FEATURES:append = " staticdev-pkgs"
 
-# Remove ptest to reduce the build time
-DISTRO_FEATURES:remove = "ptest"
+# Remove ptest to reduce the build time; drop sysvinit (wrynose Poky lists it
+# by default and it conflicts with systemd as init manager)
+DISTRO_FEATURES:remove = "ptest sysvinit"
 
 # Mask graphic Pkgs
 #BBMASK = "kernel-module-gles|gles-user-module|wayland-wsegl|wayland-kms|libgbm"

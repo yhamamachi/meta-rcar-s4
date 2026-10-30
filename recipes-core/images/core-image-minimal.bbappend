@@ -1,7 +1,7 @@
 # Build a wic.gz image (single rootfs partition, no bootloader).
 # The kernel recipe installs Image + DTB into /boot (linux-renesas.bbappend),
 # so U-Boot can ext4load them from partition 1.
-# WKS template lives in ${LAYERDIR}/wic/ (image_types_wic search path);
+# WKS template lives in ${LAYERDIR}/files/wic/ (image_types_wic search path);
 # mkfs flags come from S4SK_WIC_EXT4_OPTS (conf/machine/rcars4.inc).
 WKS_FILE = "rcar-singlepart-noloader.wks.in"
 IMAGE_FSTYPES:append = " wic.gz"
