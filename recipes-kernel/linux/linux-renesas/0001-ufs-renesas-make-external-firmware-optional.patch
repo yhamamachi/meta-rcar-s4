@@ -1,0 +1,99 @@
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+index 87578e8..d2227c7 100644
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -8981,6 +8981,13 @@ static int ufshcd_device_init(struct ufs_hba *hba, bool init_dev_params)
+ 	hba->ufshcd_state = UFSHCD_STATE_RESET;
+ 
+ 	ret = ufshcd_link_startup(hba);
++	/* Same retry as in ufshcd_init(). */
++	for (int tries = 0; ret && tries < 6; tries++) {
++		dev_warn(hba->dev, "link startup failed (%d), retrying\n", ret);
++		usleep_range(200000, 250000);
++		hba->ufshcd_state = UFSHCD_STATE_RESET;
++		ret = ufshcd_link_startup(hba);
++	}
+ 	if (ret)
+ 		return ret;
+ 
+@@ -10852,6 +10859,18 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
+ 	hba->ufshcd_state = UFSHCD_STATE_RESET;
+ 
+ 	err = ufshcd_link_startup(hba);
++	/*
++	 * With the bootloader-initialized PHY (no external firmware) the
++	 * first DME link startup can still miss the handshake. ufshcd_state
++	 * is re-set on every entry and no resources are re-requested, so
++	 * retrying here is safe.
++	 */
++	for (int tries = 0; err && tries < 6; tries++) {
++		dev_warn(hba->dev, "link startup failed (%d), retrying\n", err);
++		usleep_range(200000, 250000);
++		hba->ufshcd_state = UFSHCD_STATE_RESET;
++		err = ufshcd_link_startup(hba);
++	}
+ 	if (err)
+ 		goto out_disable;
+ 
+diff --git a/drivers/ufs/host/Kconfig b/drivers/ufs/host/Kconfig
+index 48ee7e9..640b11d 100644
+--- a/drivers/ufs/host/Kconfig
++++ b/drivers/ufs/host/Kconfig
+@@ -107,6 +107,23 @@ config SCSI_UFS_RENESAS
+ 
+ 	  If unsure, say N.
+ 
++config SCSI_UFS_RENESAS_FIRMWARE
++	bool "Load external initialization firmware for Renesas UFS host"
++	depends on SCSI_UFS_RENESAS
++	default n
++	help
++	  Enable to load r8a779f0_ufs.bin from the filesystem and use it for
++	  PHY initialization on R-Car S4 (requires calibration data from an
++	  nvmem "calibration" cell).
++
++	  Disable (default) to skip kernel-side PHY init and rely on the link
++	  the bootloader (U-Boot UFS scan) already brought up, so the kernel
++	  works without any external firmware dependency. The controller
++	  reset in ufshcd_hba_enable() does not clear the PHY registers, so
++	  link startup renegotiates from the bootloader PHY setup.
++
++	  If unsure, say N.
++
+ config SCSI_UFS_TI_J721E
+ 	tristate "TI glue layer for Cadence UFS Controller"
+ 	depends on OF && HAS_IOMEM && (ARCH_K3 || COMPILE_TEST)
+diff --git a/drivers/ufs/host/ufs-renesas.c b/drivers/ufs/host/ufs-renesas.c
+index 5bf7d0e..a41a24c 100644
+--- a/drivers/ufs/host/ufs-renesas.c
++++ b/drivers/ufs/host/ufs-renesas.c
+@@ -413,6 +413,11 @@ static void ufs_renesas_r8a779f0_pre_init(struct ufs_hba *hba)
+ 	ufs_renesas_init_enable_timer(hba, timer_val);
+ }
+ 
++static void ufs_renesas_noop_pre_init(struct ufs_hba *hba)
++{
++	/* PHY init intentionally skipped (bootloader-initialized link). */
++}
++
+ static int ufs_renesas_hce_enable_notify(struct ufs_hba *hba,
+ 					 enum ufs_notify_change_status status)
+ {
+@@ -466,6 +471,17 @@ static int ufs_renesas_init(struct ufs_hba *hba)
+ 	if (attr)
+ 		goto fallback;
+ 
++	if (!IS_ENABLED(CONFIG_SCSI_UFS_RENESAS_FIRMWARE)) {
++		/* The bootloader (U-Boot) initializes the PHY and brings
++		 * up the link before booting the kernel; re-initializing
++		 * with the uncalibrated in-tree ES1.0 code breaks that
++		 * link, so skip kernel-side PHY init entirely.
++		 */
++		dev_notice(dev, "external firmware disabled: using bootloader-initialized PHY\n");
++		priv->pre_init = ufs_renesas_noop_pre_init;
++		return 0;
++	}
++
+ 	ret = request_firmware(&priv->fw, UFS_RENESAS_FIRMWARE_NAME, dev);
+ 	if (ret) {
+ 		dev_warn(dev, "Failed to load firmware\n");

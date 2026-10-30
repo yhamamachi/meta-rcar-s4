@@ -23,6 +23,7 @@ SRC_URI = "${REPO};branch=${BRANCH};protocol=https"
 SRC_URI:append = " \
     file://rcar-s4.cfg \
     file://${MACHINE}.cfg \
+    file://0001-ufs-renesas-make-external-firmware-optional.patch \
 "
 UNPACKDIR ??= "${WORKDIR}"
 S = "${UNPACKDIR}/git"
