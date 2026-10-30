@@ -8,7 +8,7 @@ DEPENDS += "u-boot-tools-native"
 
 COMPATIBLE_MACHINE = "(s4sk|spider)"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_compile() {
     mkimage -T script -A arm64 -C none -n "S4SK UFS boot" -d boot-ufs.sh boot-ufs.uImage

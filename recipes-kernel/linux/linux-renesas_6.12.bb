@@ -24,8 +24,8 @@ SRC_URI:append = " \
     file://rcar-s4.cfg \
     file://${MACHINE}.cfg \
 "
-UNPACKDIR ??= "${WORKDIR}"
-S = "${UNPACKDIR}/git"
+BB_GIT_DEFAULT_DESTSUFFIX ?= "git"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 
 BBCLASSEXTEND = ""
 

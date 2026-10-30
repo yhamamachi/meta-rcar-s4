@@ -23,14 +23,15 @@ PLATFORM = "rcar_gen4"
 
 DEPENDS = "python3-pycryptodome-native python3-cryptography-native python3-pyelftools-native"
 
-export CROSS_COMPILE64="${TARGET_PREFIX}"
+export CROSS_COMPILE64 = "${TARGET_PREFIX}"
 
 # Let the Makefile handle setting up the flags as it is a standalone application
 #LD[unexport] = "1"
 LDFLAGS[unexport] = "1"
 libdir[unexport] = "1"
 
-S = "${WORKDIR}/git"
+BB_GIT_DEFAULT_DESTSUFFIX ?= "git"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 EXTRA_OEMAKE = "-e MAKEFLAGS="
 
 do_compile() {

@@ -25,8 +25,8 @@ SRC_URI:append = " \
     file://${MACHINE}.cfg \
     file://0001-ufs-renesas-make-external-firmware-optional.patch \
 "
-UNPACKDIR ??= "${WORKDIR}"
-S = "${UNPACKDIR}/git"
+BB_GIT_DEFAULT_DESTSUFFIX ?= "git"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 
 BBCLASSEXTEND = ""
 

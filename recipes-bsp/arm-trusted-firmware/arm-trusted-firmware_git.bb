@@ -13,7 +13,8 @@ BRANCH:rcar-gen4 = "master"
 SRC_URI = "git://github.com/ARM-software/arm-trusted-firmware.git;branch=${BRANCH};protocol=https"
 SRCREV:rcar-gen4 = "da738d5eae93af342fdc4995dd3c05acb4c9d757"
 
-S = "${WORKDIR}/git"
+BB_GIT_DEFAULT_DESTSUFFIX ?= "git"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}"
 
 CLEAN_OPT:rcar-gen4 = "clean_srecord"
 BUILD_OPT:rcar-gen4 = "bl31 rcar_srecord"
@@ -24,7 +25,7 @@ ATFW_CONF ?= ""
 ATFW_OPT:rcar-gen4 = "LSI=S4 CTX_INCLUDE_AARCH32_REGS=0 LOG_LEVEL=10 DEBUG=0"
 
 # requires CROSS_COMPILE set by hand as there is no configure script
-export CROSS_COMPILE="${TARGET_PREFIX}"
+export CROSS_COMPILE = "${TARGET_PREFIX}"
 
 # Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is a standalone application
 CFLAGS[unexport] = "1"
