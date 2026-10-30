@@ -58,13 +58,15 @@ Flashing a wic image to UFS overwrites the factory SDK image (partitions
 
 Reproducible release build = these exact layer commits:
 
-| layer | branch | commit |
+| layer | branch | pin |
 |---|---|---|
-| poky | scarthgap | `104772c5fd` |
-| meta-openembedded | scarthgap | `0f00f8b9a2` |
-| meta-rcar-s4 | scarthgap | release squash commit (see git log) |
+| poky | scarthgap | `104772c5fd0653290cbb5e4b77813343957939cc` |
+| meta-openembedded | scarthgap | `0f00f8b9a21950640da8c5707343e5540133f86e` |
+| meta-rcar-s4 | scarthgap | tag `release-2026-10-30` |
 
-Upstream sources are pinned in recipes (`SRCREV`): linux-renesas 6.18
+poky/meta-openembedded are upstream repos we cannot tag, so they stay SHA-pinned
+in `build.sh`. meta-rcar-s4 releases are tagged by date (`release-YYYY-MM-DD`);
+`build.sh` checks out the tag. Upstream sources are pinned in recipes (`SRCREV`): linux-renesas 6.18
 `cb486d3fdfe21415b979c91da1280331b5078b23` (+ layer patches), U-Boot
 `5508406582f6f7120dce0c4b3059819a41788db2`, ATF `da738d5eae93af342fdc4995dd3c05acb4c9d757`,
 OP-TEE OS `abe604ae369c7cb1892e7f57acbbafa7044f5b0c`, OP-TEE client

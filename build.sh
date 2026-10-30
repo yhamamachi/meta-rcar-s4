@@ -66,10 +66,18 @@ else
     git clone https://github.com/yhamamachi/meta-rcar-s4.git
 fi
 
-git -C poky checkout -B scarthgap origin/scarthgap
-git -C meta-openembedded checkout -B scarthgap origin/scarthgap
+# Release pins (README.md "Release pins"): reproducible release build.
+# meta-rcar-s4 is referenced by dated release tag (multiple releases can
+# coexist as release-YYYY-MM-DD tags). poky/meta-openembedded are upstream
+# repos we cannot tag, so they stay SHA-pinned to the commits tested in
+# this release. Branch tips may move; these never change for this release.
+RCAR_S4_TAG=release-2026-10-30
+POKY_PIN=104772c5fd0653290cbb5e4b77813343957939cc
+MOE_PIN=0f00f8b9a21950640da8c5707343e5540133f86e
+git -C poky checkout -B scarthgap ${POKY_PIN}
+git -C meta-openembedded checkout -B scarthgap ${MOE_PIN}
 if [[ "${IS_BUILD_INSIDE_REPO}" == "no" ]]; then
-    git -C meta-${MACHINE} checkout -B scarthgap origin/scarthgap-dev
+    git -C meta-${MACHINE} checkout -B scarthgap refs/tags/${RCAR_S4_TAG}
 fi
 
 cd $WORK
