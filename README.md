@@ -35,8 +35,8 @@ source 0x48000000
 ```
 
 The boot script sets `root=/dev/mmcblk0p1` and loads `/boot/Image` + DTB.
-(The U-Boot env `bootcmd` still holds the legacy `ext4load mmc ... u-boot`
-chain; manual boot as above, or adjust env via `setenv`/`saveenv`.)
+The board's U-Boot env `bootcmd` is set (via `setenv`/`saveenv`) to the
+`mmc rescan` + `ext4load boot-sd.uImage` chain above; cold-boot verified.
 
 ### From UFS
 U-Boot sees the on-board UFS (WDC 128GB) as SCSI device 0 (7 factory
@@ -53,6 +53,26 @@ source 0x48000000
 The boot script sets `root=/dev/sda1` and loads `/boot/Image` + DTB.
 Flashing a wic image to UFS overwrites the factory SDK image (partitions
 1–7) — treat as destructive.
+
+## Release pins (scarthgap, 2026-10-30)
+
+Reproducible release build = these exact layer commits:
+
+| layer | branch | commit |
+|---|---|---|
+| poky | scarthgap | `104772c5fd` |
+| meta-openembedded | scarthgap | `0f00f8b9a2` |
+| meta-rcar-s4 | scarthgap | release squash commit (see git log) |
+
+Upstream sources are pinned in recipes (`SRCREV`): linux-renesas 6.18
+`cb486d3fdfe21415b979c91da1280331b5078b23` (+ layer patches), U-Boot
+`5508406582f6f7120dce0c4b3059819a41788db2`, ATF `da738d5eae93af342fdc4995dd3c05acb4c9d757`,
+OP-TEE OS `abe604ae369c7cb1892e7f57acbbafa7044f5b0c`, OP-TEE client
+`a5b1ffcd26e328af0bbf18ab448a38ecd558e05c`, kern-tools `f589e1df23251d8319063da0a61c1016b2a0bf85`.
+
+Release variant: **FW=n** (firmware blobs unavailable — license). Verified
+on S4SK hardware: UFS cold boot 10/10, SD cold boot 3/3 (root mounted,
+login, `df -h /`).
 
 ## Recovery (test-only board — full rewrite OK)
 
