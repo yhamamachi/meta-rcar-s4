@@ -65,8 +65,9 @@ Reproducible release build = these exact layer commits:
 | meta-rcar-s4 | scarthgap | tag `release-2026-10-30` |
 
 poky/meta-openembedded are upstream repos we cannot tag, so they stay SHA-pinned
-in `build.sh`. meta-rcar-s4 releases are tagged by date (`release-YYYY-MM-DD`);
-`build.sh` checks out the tag. Upstream sources are pinned in recipes (`SRCREV`): linux-renesas 6.18
+in `build.sh`. meta-rcar-s4 releases are tagged `<codename>-YYYY-MM-DD`
+(`wrynose-2026-10-30` etc.; the first scarthgap tag `release-2026-10-30` is
+kept as-is); `build.sh` checks out the tag. Upstream sources are pinned in recipes (`SRCREV`): linux-renesas 6.18
 `cb486d3fdfe21415b979c91da1280331b5078b23` (+ layer patches), U-Boot
 `5508406582f6f7120dce0c4b3059819a41788db2`, ATF `da738d5eae93af342fdc4995dd3c05acb4c9d757`,
 OP-TEE OS `abe604ae369c7cb1892e7f57acbbafa7044f5b0c`, OP-TEE client
@@ -75,6 +76,26 @@ OP-TEE OS `abe604ae369c7cb1892e7f57acbbafa7044f5b0c`, OP-TEE client
 Release variant: **FW=n** (firmware blobs unavailable — license). Verified
 on S4SK hardware: UFS cold boot 10/10, SD cold boot 3/3 (root mounted,
 login, `df -h /`).
+
+## Release pins (wrynose, 2026-10-30)
+
+Reproducible Yocto 6.0 (wrynose) release build = these exact commits:
+
+| layer | branch | pin |
+|---|---|---|
+| openembedded-core (poky) | wrynose | `ae5a301091f5b0574ea7444aab40b309b6d9f3f2` |
+| bitbake | tag `yocto-6.0.4` | `51fd94a67fa17650a9ff623492005972bbc7d26f` |
+| meta-yocto | wrynose | `79b6d87030178bed0088ad3b00aa6dfbabac37c4` |
+| meta-openembedded | wrynose | `c734c2cb9713dbd6d50697a9f6c25ebdf3ae589e` |
+| meta-rcar-s4 | wrynose | tag `wrynose-2026-10-30` |
+
+Kernel 6.18.54-yocto-standard (`ge1c0b75e0b6c`), built from the same
+linux-renesas `SRCREV` as the scarthgap release. Release variant: **FW=n**.
+Verified on S4SK hardware: SD cold boot 3/3 (login, ext4 root clean mount)
+and UFS cold boot 10/10 (`/dev/sda1` mounted, UFS PHY patch
+`bootloader-initialized`, zero retries). SD image write via Linux-side
+`wget`+`dd` (U-Boot `gzwrite` silently corrupts wrynose WIC images; see
+flash notes).
 
 ## Recovery (test-only board — full rewrite OK)
 
