@@ -4,8 +4,25 @@ MACHINE=s4sk
 
 SCRIPT_DIR=$(cd `dirname $0` && pwd)
 
+# Release line follows the checked-out branch/tag: wrynose* builds Yocto 6.0
+# (separate oe-core/bitbake/meta-yocto/meta-openembedded clones); anything
+# else builds scarthgap. Default: scarthgap.
+YOCTO_VERSION=scarthgap
+REF=$(git -C ${SCRIPT_DIR} branch --show-current 2>/dev/null)
+if [[ -z "${REF}" ]]; then
+    REF=$(git -C ${SCRIPT_DIR} describe --tags 2>/dev/null)
+fi
+if [[ "${REF}" == wrynose* ]]; then
+    YOCTO_VERSION=wrynose
+fi
+
 mkdir -p ${SCRIPT_DIR}/build
-cd ${SCRIPT_DIR}/build
+if [[ "${YOCTO_VERSION}" == "wrynose" ]]; then
+    mkdir -p ${SCRIPT_DIR}/build/wrynose
+    cd ${SCRIPT_DIR}/build/wrynose
+else
+    cd ${SCRIPT_DIR}/build
+fi
 export WORK=`pwd`
 TARGET_IMAGE=core-image-minimal
 USE_SSTATE_MIRROR=no
@@ -57,8 +74,17 @@ if [[ "$(cat ${SCRIPT_DIR}/conf/layer.conf 2>&1 | grep LAYERDEPENDS_rcar-s4 )" !
 fi
 
 cd $WORK
-git clone git://git.yoctoproject.org/poky
-git clone git://git.openembedded.org/meta-openembedded
+if [[ "${YOCTO_VERSION}" == "wrynose" ]]; then
+    # Yocto 6.0 (wrynose): oe-core + bitbake + meta-yocto as separate clones
+    # (tested layout; oe-core clone lives in `poky` directory).
+    git clone --branch wrynose git://git.openembedded.org/openembedded-core poky
+    git clone git://git.openembedded.org/bitbake
+    git clone --branch wrynose git://git.yoctoproject.org/meta-yocto
+    git clone --branch wrynose git://git.openembedded.org/meta-openembedded
+else
+    git clone git://git.yoctoproject.org/poky
+    git clone git://git.openembedded.org/meta-openembedded
+fi
 if [[ "${IS_BUILD_INSIDE_REPO}" == "yes" ]]; then
     rm -f meta-rcar-s4
     ln -sfd ${SCRIPT_DIR} meta-rcar-s4
@@ -67,23 +93,58 @@ else
 fi
 
 # Release pins (README.md "Release pins"): reproducible release build.
-# meta-rcar-s4 is referenced by dated release tag (multiple releases can
-# coexist as release-YYYY-MM-DD tags). poky/meta-openembedded are upstream
-# repos we cannot tag, so they stay SHA-pinned to the commits tested in
-# this release. Branch tips may move; these never change for this release.
-RCAR_S4_TAG=release-2026-10-30
-POKY_PIN=104772c5fd0653290cbb5e4b77813343957939cc
-MOE_PIN=0f00f8b9a21950640da8c5707343e5540133f86e
-git -C poky checkout -B scarthgap ${POKY_PIN}
-git -C meta-openembedded checkout -B scarthgap ${MOE_PIN}
-if [[ "${IS_BUILD_INSIDE_REPO}" == "no" ]]; then
-    git -C meta-${MACHINE} checkout -B scarthgap refs/tags/${RCAR_S4_TAG}
+# meta-rcar-s4 is referenced by release tag (<codename>-YYYY-MM-DD; multiple
+# releases can coexist as tags). poky/meta-openembedded are upstream repos we
+# cannot tag, so they stay SHA-pinned to the commits tested in this release.
+# Branch tips may move; these never change for this release.
+if [[ "${YOCTO_VERSION}" == "wrynose" ]]; then
+    RCAR_S4_TAG=wrynose-2026-10-30
+    POKY_PIN=ae5a301091f5b0574ea7444aab40b309b6d9f3f2
+    BITBAKE_TAG=yocto-6.0.4
+    META_YOCTO_PIN=79b6d87030178bed0088ad3b00aa6dfbabac37c4
+    MOE_PIN=c734c2cb9713dbd6d50697a9f6c25ebdf3ae589e
+    git -C poky checkout -B wrynose ${POKY_PIN}
+    git -C bitbake checkout ${BITBAKE_TAG}
+    git -C meta-yocto checkout -B wrynose ${META_YOCTO_PIN}
+    git -C meta-openembedded checkout -B wrynose ${MOE_PIN}
+    if [[ "${IS_BUILD_INSIDE_REPO}" == "no" ]]; then
+        git -C meta-rcar-s4 checkout -B wrynose refs/tags/${RCAR_S4_TAG}
+    fi
+else
+    RCAR_S4_TAG=release-2026-10-30
+    POKY_PIN=104772c5fd0653290cbb5e4b77813343957939cc
+    MOE_PIN=0f00f8b9a21950640da8c5707343e5540133f86e
+    git -C poky checkout -B scarthgap ${POKY_PIN}
+    git -C meta-openembedded checkout -B scarthgap ${MOE_PIN}
+    if [[ "${IS_BUILD_INSIDE_REPO}" == "no" ]]; then
+        git -C meta-rcar-s4 checkout -B scarthgap refs/tags/${RCAR_S4_TAG}
+    fi
 fi
 
 cd $WORK
 rm -rf build-$MACHINE/conf
 TEMPLATECONF=${WORK}/meta-rcar-s4/conf/templates/${MACHINE} \
     . poky/oe-init-build-env build-$MACHINE
+
+if [[ "${YOCTO_VERSION}" == "wrynose" ]]; then
+# wrynose layout: oe-core (poky dir) + separate meta-yocto; MOE subset as
+# validated by the wrynose-2026-10-30 release build. Quoted heredoc: TOPDIR
+# must stay unexpanded here for bitbake to resolve.
+cat << 'EOS' > conf/bblayers.conf
+BBPATH = "${TOPDIR}"
+BBFILES ?= ""
+
+BBLAYERS ?= " \
+  ${TOPDIR}/../poky/meta \
+  ${TOPDIR}/../meta-yocto/meta-poky \
+  ${TOPDIR}/../meta-yocto/meta-yocto-bsp \
+  ${TOPDIR}/../meta-rcar-s4 \
+  ${TOPDIR}/../meta-openembedded/meta-oe \
+  ${TOPDIR}/../meta-openembedded/meta-python \
+  ${TOPDIR}/../meta-openembedded/meta-networking \
+  "
+EOS
+fi
 
 if [[ "${USE_SSTATE_MIRROR}" == "yes" ]]; then
 cat << EOS >> conf/local.conf
@@ -141,6 +202,6 @@ fi
 
 # Cleanup symbolic link
 if [[ "${IS_BUILD_INSIDE_REPO}" == "yes" ]]; then
-    rm -f ${WORK}/meta-${MACHINE}
+    rm -f ${WORK}/meta-rcar-s4
 fi
 

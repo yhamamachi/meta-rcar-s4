@@ -91,6 +91,10 @@ Reproducible Yocto 6.0 (wrynose) release build = these exact commits:
 
 Kernel 6.18.54-yocto-standard (`ge1c0b75e0b6c`), built from the same
 linux-renesas `SRCREV` as the scarthgap release. Release variant: **FW=n**.
+Build: check out branch `wrynose` (or `wrynose-dev`) and run `./build.sh s4sk`
+— `build.sh` picks the release line from the checked-out branch/tag, clones
+oe-core/bitbake/meta-yocto/meta-openembedded separately, and builds in
+`build/wrynose/build-s4sk`.
 Verified on S4SK hardware: SD cold boot 3/3 (login, ext4 root clean mount)
 and UFS cold boot 10/10 (`/dev/sda1` mounted, UFS PHY patch
 `bootloader-initialized`, zero retries). SD image write via Linux-side
