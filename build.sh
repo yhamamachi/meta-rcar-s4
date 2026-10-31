@@ -195,6 +195,12 @@ if [[ "${REMOVE_WORKDIR}" == "yes" ]]; then
     echo 'INHERIT += "rm_work"' >> conf/local.conf
 fi
 
+# pyenv shim dirs on PATH make OE's tmp/hosttools/python3 symlink point at
+# the shim; fetch wrappers shebang #!/usr/bin/env python3 and die with
+# exit 127 ("pyenv: python3: command not found"). Force /usr/bin first so
+# hosttools resolves to the real python3.
+export PATH=/usr/bin:/bin:$PATH
+
 bitbake ${TARGET_IMAGE}
 if [[ "${IS_BUILD_SDK}" == "yes" ]]; then
     bitbake ${TARGET_IMAGE} -c populate_sdk
