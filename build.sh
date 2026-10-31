@@ -103,10 +103,30 @@ INHERIT += "create-spdx"
 SPDX_PRETTY = "1"
 # optional. if "1", output spdx files includes [file-information section](https://spdx.github.io/spdx-spec/v2.3/file-information/).
 SPDX_INCLUDE_SOURCES = "1"
-# optional. if "1", bitbake will create source files archive for each package.
-SPDX_ARCHIVE_SOURCES = "1"
 # optional. if "1", bitbake will create output binary archive for each package.
 SPDX_ARCHIVE_PACKAGED = "1"
+
+# required. enable to archive the source of GPL/LGPL/AGPL packages
+# into tmp/deploy/sources.
+INHERIT += "archiver"
+
+# optional. archive the original source, patches and recipe.
+ARCHIVER_MODE[src] = "original"
+ARCHIVER_MODE[diff] = "1"
+ARCHIVER_MODE[recipe] = "1"
+EOS
+
+# The native and cross recipes are not distributed. The SDK installer
+# includes nativesdk and cross-canadian (gcc, binutils) recipes.
+if [[ "${IS_BUILD_SDK}" == "yes" ]]; then
+    COPYLEFT_RECIPE_TYPES="target nativesdk cross-canadian"
+else
+    COPYLEFT_RECIPE_TYPES="target"
+fi
+cat << EOS >> conf/local.conf
+
+# optional. archive the source only of the recipes included in the output.
+COPYLEFT_RECIPE_TYPES = "${COPYLEFT_RECIPE_TYPES}"
 EOS
 else # Disable SBOM build to reduce build time
 cat << EOS >> conf/local.conf
