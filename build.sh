@@ -98,7 +98,7 @@ fi
 # cannot tag, so they stay SHA-pinned to the commits tested in this release.
 # Branch tips may move; these never change for this release.
 if [[ "${YOCTO_VERSION}" == "wrynose" ]]; then
-    RCAR_S4_TAG=wrynose-2026-10-30
+    RCAR_S4_TAG=wrynose-2026-10-31
     POKY_PIN=ae5a301091f5b0574ea7444aab40b309b6d9f3f2
     BITBAKE_TAG=yocto-6.0.4
     META_YOCTO_PIN=79b6d87030178bed0088ad3b00aa6dfbabac37c4
@@ -128,7 +128,7 @@ TEMPLATECONF=${WORK}/meta-rcar-s4/conf/templates/${MACHINE} \
 
 if [[ "${YOCTO_VERSION}" == "wrynose" ]]; then
 # wrynose layout: oe-core (poky dir) + separate meta-yocto; MOE subset as
-# validated by the wrynose-2026-10-30 release build. Quoted heredoc: TOPDIR
+# validated by the wrynose-2026-10-31 release build. Quoted heredoc: TOPDIR
 # must stay unexpanded here for bitbake to resolve.
 cat << 'EOS' > conf/bblayers.conf
 BBPATH = "${TOPDIR}"
