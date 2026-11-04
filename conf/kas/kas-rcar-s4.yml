@@ -1,0 +1,48 @@
+# kas base configuration for meta-rcar-s4 (Yocto 6.0 / wrynose).
+# Pins match the wrynose-2026-10-31 release (README "Release pins").
+# meta-rcar-s4 itself is referenced as the local checkout (run kas from a
+# release tag checkout for reproducible builds, same model as build.sh).
+#
+# Layout note: wrynose splits oe-core/bitbake/meta-yocto into separate repos.
+# kas clones them side by side in KAS_WORK_DIR; oe-buildenv-internal finds
+# bitbake at $OEROOT/../bitbake, so no path hack is needed.
+header:
+  version: 23
+  includes:
+    - conf/kas/kas-common.yml
+
+repos:
+  poky:
+    url: https://git.openembedded.org/openembedded-core
+    commit: ae5a301091f5b0574ea7444aab40b309b6d9f3f2
+    layers:
+      meta:
+        prio: 30
+  bitbake:
+    url: https://git.openembedded.org/bitbake
+    tag: yocto-6.0.4
+    commit: 51fd94a67fa17650a9ff623492005972bbc7d26f
+    layers: {}
+  meta-yocto:
+    url: https://git.yoctoproject.org/meta-yocto
+    commit: 79b6d87030178bed0088ad3b00aa6dfbabac37c4
+    layers:
+      meta-poky:
+        prio: 25
+      meta-yocto-bsp:
+        prio: 25
+  meta-openembedded:
+    url: https://git.openembedded.org/meta-openembedded
+    commit: c734c2cb9713dbd6d50697a9f6c25ebdf3ae589e
+    layers:
+      meta-oe:
+        prio: 10
+      meta-python:
+        prio: 10
+      meta-networking:
+        prio: 10
+
+local_conf_header:
+  meta-rcar-s4-wrynose: |
+    EXTRA_IMAGE_FEATURES ?= "allow-root-login allow-empty-password empty-root-password"
+    DISTRO_FEATURES:remove = "ptest sysvinit"

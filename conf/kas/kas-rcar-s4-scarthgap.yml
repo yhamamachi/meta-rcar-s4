@@ -1,0 +1,44 @@
+# kas base configuration for meta-rcar-s4 (Yocto 5.0 / scarthgap).
+# Pins match the scarthgap release-2026-10-30 (README "Release pins"):
+# poky 104772c5fd, meta-openembedded 0f00f8b9; meta-rcar-s4 is referenced by
+# tag release-2026-10-30 — run kas from that tag checkout for reproducible
+# builds, same model as build.sh.
+#
+# Layout note: scarthgap uses the bundled poky repo (bitbake + meta-poky +
+# meta-yocto-bsp live inside poky), unlike wrynose's split repos.
+header:
+  version: 23
+  includes:
+    - conf/kas/kas-common.yml
+
+repos:
+  poky:
+    url: https://git.yoctoproject.org/poky
+    commit: 104772c5fd0653290cbb5e4b77813343957939cc
+    layers:
+      meta:
+        prio: 30
+      meta-poky:
+        prio: 30
+      meta-yocto-bsp:
+        prio: 30
+  meta-openembedded:
+    url: https://git.openembedded.org/meta-openembedded
+    commit: 0f00f8b9a21950640da8c5707343e5540133f86e
+    layers:
+      meta-oe:
+        prio: 10
+      meta-python:
+        prio: 10
+      meta-networking:
+        prio: 10
+      meta-multimedia:
+        prio: 10
+
+local_conf_header:
+  meta-rcar-s4-scarthgap: |
+    EXTRA_IMAGE_FEATURES ?= "debug-tweaks"
+    DISTRO_FEATURES:remove = "ptest"
+    # Install license manifest and license texts into rootfs (release builds)
+    COPY_LIC_MANIFEST = "1"
+    COPY_LIC_DIRS = "1"
