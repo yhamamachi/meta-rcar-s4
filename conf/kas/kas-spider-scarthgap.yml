@@ -1,0 +1,8 @@
+# Spider board build via kas (scarthgap line):
+#   kas build conf/kas/kas-spider-scarthgap.yml
+header:
+  version: 23
+  includes:
+    - conf/kas/kas-rcar-s4-scarthgap.yml
+
+machine: spider

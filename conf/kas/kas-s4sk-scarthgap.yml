@@ -1,0 +1,8 @@
+# S4SK board build via kas (scarthgap line):
+#   kas build conf/kas/kas-s4sk-scarthgap.yml
+header:
+  version: 23
+  includes:
+    - conf/kas/kas-rcar-s4-scarthgap.yml
+
+machine: s4sk
