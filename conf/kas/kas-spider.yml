@@ -1,0 +1,7 @@
+# Spider board build via kas:  kas build conf/kas/kas-spider.yml
+header:
+  version: 23
+  includes:
+    - conf/kas/kas-rcar-s4.yml
+
+machine: spider

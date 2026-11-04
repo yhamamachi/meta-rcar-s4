@@ -9,6 +9,20 @@ Yocto BSP layer for Renesas R-Car S4 boards (S4SK, Spider).
 ./build.sh spider
 ```
 
+From `wrynose` onward, kas is the standard build entry point (single config
+file pins every repo; no manual clone/checkout):
+
+```
+./build-with-kas.sh s4sk    # kas build conf/kas/kas-s4sk.yml
+./build-with-kas.sh spider  # kas build conf/kas/kas-spider.yml
+```
+
+`conf/kas/kas-rcar-s4.yml` pins poky/bitbake/meta-yocto/meta-openembedded to
+the same refs as `build.sh` release pins (see Release pins below);
+meta-rcar-s4 itself is used as the checked-out tree. kas clones into
+`build/kas/` and builds in `build/kas/build/`. Requires `pip install kas`.
+Cache reuse is optional: `DL_DIR=... SSTATE_DIR=... ./build-with-kas.sh s4sk`.
+
 Kernel versions: `PREFERRED_VERSION_linux-renesas = "6.18%"` (default,
 6.18.54 on `renesas-lts/v6.18.54`, verified booting on S4SK hardware).
 Override to `"6.12%"` to build the previous LTS kernel.

@@ -1,0 +1,7 @@
+# S4SK board build via kas:  kas build conf/kas/kas-s4sk.yml
+header:
+  version: 23
+  includes:
+    - conf/kas/kas-rcar-s4.yml
+
+machine: s4sk
