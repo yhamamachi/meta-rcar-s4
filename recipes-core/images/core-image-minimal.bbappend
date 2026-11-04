@@ -45,9 +45,15 @@ do_s4sk_fix_ufs_mbr() {
     # consumes ${IMAGE_LINK_NAME}-sd.wic.gz.
     cp -f "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.wic.gz" \
           "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}-sd.wic.gz"
-    # Patch the deployed artifact (what the flash script consumes); the
-    # IMGDEPLOYDIR staging copy is intermediate and overwritten per build.
-    python3 "$script" "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.wic.gz"
+    # Patch the REAL deployed timestamped file, not the link-name symlink.
+    # fix_ufs_mbr.py replaces the file it patches (os.replace), so running it
+    # on the symlink path would swap the symlink for a regular patched file
+    # and leave the timestamped artifact unpatched — anyone picking the
+    # timestamped name directly would flash a 512-byte-unit MBR and UFS boot
+    # would fail. Patching the resolved target keeps every deployed name
+    # (timestamped + link) consistent. The IMGDEPLOYDIR staging copy is
+    # intermediate and overwritten per build.
+    python3 "$script" "$(readlink -f "${DEPLOY_DIR_IMAGE}/${IMAGE_LINK_NAME}.wic.gz")"
 }
 addtask s4sk_fix_ufs_mbr after do_image_complete before do_build
 do_s4sk_fix_ufs_mbr[depends] += "python3-native:do_populate_sysroot"
