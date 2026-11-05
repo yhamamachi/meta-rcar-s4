@@ -68,7 +68,7 @@ The boot script sets `root=/dev/sda1` and loads `/boot/Image` + DTB.
 Flashing a wic image to UFS overwrites the factory SDK image (partitions
 1–7) — treat as destructive.
 
-## Release pins (scarthgap, 2026-10-30)
+## Release pins (scarthgap, 2026-11-04)
 
 Reproducible release build = these exact layer commits:
 
@@ -76,7 +76,7 @@ Reproducible release build = these exact layer commits:
 |---|---|---|
 | poky | scarthgap | `104772c5fd0653290cbb5e4b77813343957939cc` |
 | meta-openembedded | scarthgap | `0f00f8b9a21950640da8c5707343e5540133f86e` |
-| meta-rcar-s4 | scarthgap | tag `release-2026-10-30` |
+| meta-rcar-s4 | scarthgap | tag `release-2026-11-04` |
 
 poky/meta-openembedded are upstream repos we cannot tag, so they stay SHA-pinned
 in `build.sh`. meta-rcar-s4 releases are tagged by date (`release-YYYY-MM-DD`);
@@ -87,8 +87,8 @@ OP-TEE OS `abe604ae369c7cb1892e7f57acbbafa7044f5b0c`, OP-TEE client
 `a5b1ffcd26e328af0bbf18ab448a38ecd558e05c`, kern-tools `f589e1df23251d8319063da0a61c1016b2a0bf85`.
 
 Release variant: **FW=n** (firmware blobs unavailable — license). Verified
-on S4SK hardware: UFS cold boot 10/10, SD cold boot 3/3 (root mounted,
-login, `df -h /`).
+on S4SK hardware: SD cold boot 3/3 on the release repro build image
+(2026-11-05), UFS cold boot 10/10 on the matching dev-line build (2026-11-04).
 
 ## Recovery (test-only board — full rewrite OK)
 

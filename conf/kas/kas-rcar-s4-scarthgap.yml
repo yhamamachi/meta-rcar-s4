@@ -1,7 +1,7 @@
 # kas base configuration for meta-rcar-s4 (Yocto 5.0 / scarthgap).
-# Pins match the scarthgap release-2026-10-30 (README "Release pins"):
+# Pins match the scarthgap release-2026-11-04 (README "Release pins"):
 # poky 104772c5fd, meta-openembedded 0f00f8b9; meta-rcar-s4 is referenced by
-# tag release-2026-10-30 — run kas from that tag checkout for reproducible
+# tag release-2026-11-04 — run kas from that tag checkout for reproducible
 # builds, same model as build.sh.
 #
 # Layout note: scarthgap uses the bundled poky repo (bitbake + meta-poky +

@@ -71,7 +71,7 @@ fi
 # coexist as release-YYYY-MM-DD tags). poky/meta-openembedded are upstream
 # repos we cannot tag, so they stay SHA-pinned to the commits tested in
 # this release. Branch tips may move; these never change for this release.
-RCAR_S4_TAG=release-2026-10-30
+RCAR_S4_TAG=release-2026-11-04
 POKY_PIN=104772c5fd0653290cbb5e4b77813343957939cc
 MOE_PIN=0f00f8b9a21950640da8c5707343e5540133f86e
 git -C poky checkout -B scarthgap ${POKY_PIN}
