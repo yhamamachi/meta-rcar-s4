@@ -19,11 +19,10 @@
 MACHINE=s4sk
 TARGET=""
 for arg in "$@"; do
-    if [[ "$arg" == "s4sk" || "$arg" == "spider" ]]; then
-        MACHINE="$arg"
-    else
-        TARGET="$arg"
-    fi
+    case "$arg" in
+        s4sk|spider) MACHINE="$arg" ;;
+        *) TARGET="$arg" ;;
+    esac
 done
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)

@@ -47,26 +47,20 @@ Usage () {
     echo "       | --rm-work:       Remove working directory while building to reduce storage space."
     exit
 }
-for arg in $@; do
-    if [[ "$arg" == "s4sk" ]]; then
-        MACHINE=s4sk
-    elif [[ "$arg" == "spider" ]]; then
-        MACHINE=spider
-    elif [[ "$arg" == "-h" ]] || [[ "$arg" == "--help" ]]; then
-        Usage; exit
-    elif [[ "$arg" == "-s" ]] || [[ "$arg" == "--sdk" ]]; then
-        IS_BUILD_SDK=yes
-    elif [[ "$arg" == "--sbom" ]]; then
-        BUILD_SBOM=yes
-    elif [[ "$arg" == "--rm-work" ]]; then
-        REMOVE_WORKDIR=yes
-    elif [[ "$arg" == "--sstate-mirror" ]]; then
-        USE_SSTATE_MIRROR=yes
-    elif [[ "$arg" == "--next-kernel" ]]; then
-        USE_NEXT_KERNEL=yes
-    elif [[ "$arg" == "--build-rootfs-only" ]]; then
-        BUILD_ROOTFS_ONLY=yes
-    fi
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        s4sk)   MACHINE=s4sk ;;
+        spider) MACHINE=spider ;;
+        -h|--help) Usage; exit ;;
+        -s|--sdk) IS_BUILD_SDK=yes ;;
+        --sbom) BUILD_SBOM=yes ;;
+        --rm-work) REMOVE_WORKDIR=yes ;;
+        --sstate-mirror) USE_SSTATE_MIRROR=yes ;;
+        --next-kernel) USE_NEXT_KERNEL=yes ;;
+        --build-rootfs-only) BUILD_ROOTFS_ONLY=yes ;;
+        *) ;; # Ignore unknown option
+    esac
+    shift
 done
 
 if [[ "$(cat ${SCRIPT_DIR}/conf/layer.conf 2>&1 | grep LAYERDEPENDS_rcar-s4 )" != "" ]] ;then
